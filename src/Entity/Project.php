@@ -25,7 +25,7 @@ class Project
     #[ORM\Column]
     private ?bool $isFinished = null;
 
-    #[ORM\ManyToMany(targetEntity: Profil::class, inversedBy: 'projects')]
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'projects')]
     private Collection $participant;
 
     public function __construct()
@@ -82,7 +82,7 @@ class Project
         return $this->participant;
     }
 
-    public function addParticipant(Profil $participant): static
+    public function addParticipant(User $participant): static
     {
         if (!$this->participant->contains($participant)) {
             $this->participant->add($participant);
@@ -91,7 +91,7 @@ class Project
         return $this;
     }
 
-    public function removeParticipant(Profil $participant): static
+    public function removeParticipant(User $participant): static
     {
         $this->participant->removeElement($participant);
 

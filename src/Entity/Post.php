@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PostRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -27,10 +29,7 @@ class Post
     private ?\DateTimeInterface $dateModified = null;
 
     #[ORM\ManyToOne(inversedBy: 'posts')]
-    private ?Profil $creator = null;
-
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Media $media = null;
+    private ?User $creator = null;
 
     #[ORM\OneToOne(mappedBy: 'post', cascade: ['persist', 'remove'])]
     private ?Project $project = null;
@@ -38,6 +37,14 @@ class Post
     #[ORM\ManyToOne(inversedBy: 'posts')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Genre $genre = null;
+
+    #[ORM\OneToMany(mappedBy: 'post', targetEntity: Media::class)]
+    private Collection $media;
+
+    public function __construct()
+    {
+        $this->media = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -92,29 +99,18 @@ class Post
         return $this;
     }
 
-    public function getCreator(): ?Profil
+    public function getCreator(): ?User
     {
         return $this->creator;
     }
 
-    public function setCreator(?Profil $creator): static
+    public function setCreator(?User $creator): static
     {
         $this->creator = $creator;
 
         return $this;
     }
 
-    public function getMedia(): ?Media
-    {
-        return $this->media;
-    }
-
-    public function setMedia(?Media $media): static
-    {
-        $this->media = $media;
-
-        return $this;
-    }
 
     public function getProject(): ?Project
     {
@@ -141,6 +137,36 @@ class Post
     public function setGenre(?Genre $genre): static
     {
         $this->genre = $genre;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Media>
+     */
+    public function getMedia(): Collection
+    {
+        return $this->media;
+    }
+
+    public function addMedium(Media $medium): static
+    {
+        if (!$this->media->contains($medium)) {
+            $this->media->add($medium);
+            $medium->setPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMedium(Media $medium): static
+    {
+        if ($this->media->removeElement($medium)) {
+            // set the owning side to null (unless already changed)
+            if ($medium->getPost() === $this) {
+                $medium->setPost(null);
+            }
+        }
 
         return $this;
     }
