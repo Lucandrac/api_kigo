@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Profil;
 use App\Entity\User;
 use App\Security\UserAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -42,6 +43,13 @@ class RegistrationController extends AbstractController
         );
         //on persiste l'utilisateur
         $entityManager->persist($user);
+
+        $profil = new Profil();
+        $profil->setUserId($user);
+        $profil->setBiography('...');
+        $profil->setFiliere(null);
+
+        $entityManager->persist($profil);
         //on flush
         $entityManager->flush();
 

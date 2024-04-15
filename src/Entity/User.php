@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -18,6 +19,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['profil_read', 'profil_write'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
@@ -36,9 +38,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['profil_read', 'profil_write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['profil_read', 'profil_write'])]
     private ?string $firstName = null;
 
     #[ORM\Column]
@@ -48,10 +52,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Profil $profil = null;
 
     #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Post::class)]
+    #[Groups(['profil_read', 'profil_write'])]
     private Collection $posts;
 
 
     #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'participant')]
+    #[Groups(['profil_read', 'profil_write'])]
     private Collection $projects;
     
     public function __construct()

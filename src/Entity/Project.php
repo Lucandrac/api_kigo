@@ -2,12 +2,14 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
+#[ApiResource]
 class Project
 {
     #[ORM\Id]
@@ -16,7 +18,7 @@ class Project
     private ?int $id = null;
 
     #[ORM\OneToOne(inversedBy: 'project', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Post $post = null;
 
     #[ORM\Column]
@@ -28,9 +30,17 @@ class Project
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'projects')]
     private Collection $participant;
 
+    #[ORM\ManyToMany(targetEntity: Skill::class, inversedBy: 'projects')]
+    private Collection $skills;
+
+    #[ORM\ManyToMany(targetEntity: Filiere::class, inversedBy: 'projects')]
+    private Collection $filieres;
+
     public function __construct()
     {
         $this->participant = new ArrayCollection();
+        $this->skills = new ArrayCollection();
+        $this->filieres = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -94,6 +104,54 @@ class Project
     public function removeParticipant(User $participant): static
     {
         $this->participant->removeElement($participant);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Skill>
+     */
+    public function getSkills(): Collection
+    {
+        return $this->skills;
+    }
+
+    public function addSkill(Skill $skill): static
+    {
+        if (!$this->skills->contains($skill)) {
+            $this->skills->add($skill);
+        }
+
+        return $this;
+    }
+
+    public function removeSkill(Skill $skill): static
+    {
+        $this->skills->removeElement($skill);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Filiere>
+     */
+    public function getFilieres(): Collection
+    {
+        return $this->filieres;
+    }
+
+    public function addFiliere(Filiere $filiere): static
+    {
+        if (!$this->filieres->contains($filiere)) {
+            $this->filieres->add($filiere);
+        }
+
+        return $this;
+    }
+
+    public function removeFiliere(Filiere $filiere): static
+    {
+        $this->filieres->removeElement($filiere);
 
         return $this;
     }
