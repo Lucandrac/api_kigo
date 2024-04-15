@@ -29,15 +29,17 @@ class RegistrationController extends AbstractController
         $user = new User();
         //on lui set les paramètres
         $user->setEmail($data['email']);
-        $user->setNickname($data['nickname']);
+        $user->setName($data['name']);
+        $user->setFirstName($data['firstName']);
+        $user->setRoles(['ROLE_USER']);
+        $user->setIsAdmin(false);
+        //on hache le mot de passe
         $user->setPassword(
             $userPasswordHasher->hashPassword(
                 $user,
                 $data['password']
             )
         );
-        //on lui donne le paramètre de createdAt
-        $user->setCreatedAt(time());
         //on persiste l'utilisateur
         $entityManager->persist($user);
         //on flush
