@@ -7,33 +7,44 @@ use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ["project_read"]],
+    denormalizationContext: ['groups' => ["project_write"]],
+)]
 class Project
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['post_read', 'post_write', 'project_read', 'project_write'])]
     private ?int $id = null;
 
     #[ORM\OneToOne(inversedBy: 'project', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['project_read', 'project_write'])]
     private ?Post $post = null;
 
     #[ORM\Column]
+    #[Groups(['post_read', 'post_write', 'project_read', 'project_write'])]
     private ?bool $isOpen = null;
 
     #[ORM\Column]
+    #[Groups(['project_read', 'project_write'])]
     private ?bool $isFinished = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'projects')]
+    #[Groups(['project_read', 'project_write'])]
     private Collection $participant;
 
     #[ORM\ManyToMany(targetEntity: Skill::class, inversedBy: 'projects')]
+    #[Groups(['post_read', 'post_write', 'project_read', 'project_write'])]
     private Collection $skills;
 
     #[ORM\ManyToMany(targetEntity: Filiere::class, inversedBy: 'projects')]
+    #[Groups(['post_read', 'post_write', 'project_read', 'project_write'])]
     private Collection $filieres;
 
     public function __construct()

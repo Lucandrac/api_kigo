@@ -44,6 +44,20 @@ class Profil
     #[Groups(['profil_read', 'profil_write'])]
     private ?User $userId = null;
 
+    #[ORM\ManyToMany(targetEntity: Skill::class)]
+    #[Groups(['profil_read', 'profil_write'])]
+    private Collection $skills;
+
+    #[ORM\OneToMany(mappedBy: 'profil', targetEntity: Contact::class, orphanRemoval: true)]
+    #[Groups(['profil_read', 'profil_write'])]
+    private Collection $contacts;
+
+    public function __construct()
+    {
+        $this->skills = new ArrayCollection();
+        $this->contacts = new ArrayCollection();
+    }
+
 
 
     public function getId(): ?int
@@ -83,6 +97,60 @@ class Profil
     public function setUserId(User $userId): static
     {
         $this->userId = $userId;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Skill>
+     */
+    public function getSkills(): Collection
+    {
+        return $this->skills;
+    }
+
+    public function addSkill(Skill $skill): static
+    {
+        if (!$this->skills->contains($skill)) {
+            $this->skills->add($skill);
+        }
+
+        return $this;
+    }
+
+    public function removeSkill(Skill $skill): static
+    {
+        $this->skills->removeElement($skill);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Contact>
+     */
+    public function getContacts(): Collection
+    {
+        return $this->contacts;
+    }
+
+    public function addContact(Contact $contact): static
+    {
+        if (!$this->contacts->contains($contact)) {
+            $this->contacts->add($contact);
+            $contact->setProfil($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContact(Contact $contact): static
+    {
+        if ($this->contacts->removeElement($contact)) {
+            // set the owning side to null (unless already changed)
+            if ($contact->getProfil() === $this) {
+                $contact->setProfil(null);
+            }
+        }
 
         return $this;
     }

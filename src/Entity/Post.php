@@ -2,45 +2,68 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\PostRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['post_read']],
+    denormalizationContext: ['groups' => ['post_write']],
+    order: ['dateCreation' => 'DESC'],
+)]
+#[ApiFilter(
+    SearchFilter::class,
+    properties: [
+        'genre' => 'exact',
+        'creator' => 'exact',
+    ]
+)]
 class Post
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+     #[Groups(['post_read', 'post_write', 'project_read', 'project_write'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['post_read', 'post_write', 'project_read', 'project_write'])]
     private ?string $titre = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['post_read', 'post_write', 'project_read', 'project_write'])]
     private ?string $content = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['post_read', 'post_write', 'project_read', 'project_write'])]
     private ?\DateTimeInterface $dateCreation = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['post_read', 'post_write', 'project_read', 'project_write'])]
     private ?\DateTimeInterface $dateModified = null;
 
     #[ORM\ManyToOne(inversedBy: 'posts')]
+    #[Groups(['post_read', 'post_write', 'project_read', 'project_write'])]
     private ?User $creator = null;
 
     #[ORM\OneToOne(mappedBy: 'post', cascade: ['persist', 'remove'])]
+    #[Groups(['post_read', 'post_write'])]
     private ?Project $project = null;
 
     #[ORM\ManyToOne(inversedBy: 'posts')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['post_read', 'post_write'])]
     private ?Genre $genre = null;
 
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: Media::class)]
+    #[Groups(['post_read', 'post_write'])]
     private Collection $media;
 
     public function __construct()

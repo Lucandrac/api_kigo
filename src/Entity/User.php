@@ -19,7 +19,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['profil_read', 'profil_write'])]
+    #[Groups(['profil_read', 'profil_write', 'project_read', 'project_write'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
@@ -38,11 +38,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['profil_read', 'profil_write'])]
+    #[Groups(['profil_read', 'profil_write', 'project_read', 'project_write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['profil_read', 'profil_write'])]
+    #[Groups(['profil_read', 'profil_write', 'project_read', 'project_write'])]
     private ?string $firstName = null;
 
     #[ORM\Column]
