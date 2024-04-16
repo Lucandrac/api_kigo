@@ -59,11 +59,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'participant')]
     #[Groups(['profil_read', 'profil_write'])]
     private Collection $projects;
+
+    #[ORM\OneToMany(mappedBy: 'userId', targetEntity: Invite::class)]
+    private Collection $invites;
     
     public function __construct()
     {
         $this->posts = new ArrayCollection();
         $this->projects = new ArrayCollection();
+        $this->invites = new ArrayCollection();
 
     }
 
@@ -247,6 +251,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->projects->removeElement($project)) {
             $project->removeParticipant($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Invite>
+     */
+    public function getInvites(): Collection
+    {
+        return $this->invites;
+    }
+
+    public function addInvite(Invite $invite): static
+    {
+        if (!$this->invites->contains($invite)) {
+            $this->invites->add($invite);
+            $invite->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvite(Invite $invite): static
+    {
+        if ($this->invites->removeElement($invite)) {
+            // set the owning side to null (unless already changed)
+            if ($invite->getUserId() === $this) {
+                $invite->setUserId(null);
+            }
         }
 
         return $this;

@@ -47,11 +47,15 @@ class Project
     #[Groups(['post_read', 'post_write', 'project_read', 'project_write'])]
     private Collection $filieres;
 
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: Invite::class)]
+    private Collection $invites;
+
     public function __construct()
     {
         $this->participant = new ArrayCollection();
         $this->skills = new ArrayCollection();
         $this->filieres = new ArrayCollection();
+        $this->invites = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -163,6 +167,36 @@ class Project
     public function removeFiliere(Filiere $filiere): static
     {
         $this->filieres->removeElement($filiere);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Invite>
+     */
+    public function getInvites(): Collection
+    {
+        return $this->invites;
+    }
+
+    public function addInvite(Invite $invite): static
+    {
+        if (!$this->invites->contains($invite)) {
+            $this->invites->add($invite);
+            $invite->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvite(Invite $invite): static
+    {
+        if ($this->invites->removeElement($invite)) {
+            // set the owning side to null (unless already changed)
+            if ($invite->getProject() === $this) {
+                $invite->setProject(null);
+            }
+        }
 
         return $this;
     }
