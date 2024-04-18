@@ -2,10 +2,15 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\MediaRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
+#[ApiResource]
 class Media
 {
     #[ORM\Id]
@@ -14,7 +19,11 @@ class Media
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['post_read', 'post_write', 'project_read', 'project_write'])]
     private ?string $url = null;
+
+    #[Vich\UploadableField(mapping: 'media', fileNameProperty: 'url')]
+    private ?File $imageFile = null;
 
     #[ORM\Column(length: 255)]
     private ?string $label = null;

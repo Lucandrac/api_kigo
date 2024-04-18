@@ -34,7 +34,7 @@ class Post
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['post_read', 'post_write', 'project_read', 'project_write'])]
+    #[Groups(['post_read', 'post_write', 'project_read', 'project_write', 'invite_read', 'invite_write'])]
     private ?string $titre = null;
 
     #[ORM\Column(type: Types::TEXT)]

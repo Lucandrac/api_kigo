@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -14,17 +16,23 @@ use Symfony\Component\Serializer\Attribute\Groups;
     normalizationContext: ['groups' => ["project_read"]],
     denormalizationContext: ['groups' => ["project_write"]],
 )]
+#[ApiFilter(
+    SearchFilter::class,
+    properties: [
+        'participant.id' => 'exact',
+    ]
+)]
 class Project
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['post_read', 'post_write', 'project_read', 'project_write'])]
+    #[Groups(['post_read', 'post_write', 'project_read', 'project_write', 'invite_read', 'invite_write'])]
     private ?int $id = null;
 
     #[ORM\OneToOne(inversedBy: 'project', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['project_read', 'project_write'])]
+    #[Groups(['project_read', 'project_write', 'invite_read', 'invite_write'])]
     private ?Post $post = null;
 
     #[ORM\Column]
@@ -48,7 +56,16 @@ class Project
     private Collection $filieres;
 
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Invite::class)]
+    #[Groups(['project_read', 'project_write'])]
     private Collection $invites;
+
+    #[ORM\ManyToOne]
+    #[Groups(['post_read', 'post_write', 'project_read', 'project_write'])]
+    private ?Category $category = null;
+
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: Message::class)]
+    #[Groups(['project_read', 'project_write'])]
+    private Collection $messages;
 
     public function __construct()
     {
@@ -56,6 +73,7 @@ class Project
         $this->skills = new ArrayCollection();
         $this->filieres = new ArrayCollection();
         $this->invites = new ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -195,6 +213,48 @@ class Project
             // set the owning side to null (unless already changed)
             if ($invite->getProject() === $this) {
                 $invite->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): static
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages->add($message);
+            $message->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): static
+    {
+        if ($this->messages->removeElement($message)) {
+            // set the owning side to null (unless already changed)
+            if ($message->getProject() === $this) {
+                $message->setProject(null);
             }
         }
 
