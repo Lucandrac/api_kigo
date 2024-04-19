@@ -15,7 +15,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ApiResource(
     normalizationContext: ['groups' => ['invite_read']],
     denormalizationContext: ['groups' => ['invite_write']],
-    order: ['dateCreation' => 'DESC'],
+    order: ['dateCreated' => 'DESC'],
 )]
 #[ApiFilter(
     SearchFilter::class,

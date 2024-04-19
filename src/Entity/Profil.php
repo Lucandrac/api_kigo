@@ -28,7 +28,7 @@ class Profil
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['profil_read', 'profil_write'])]
+    #[Groups(['profil_read', 'profil_write', 'user_read', 'user_write'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

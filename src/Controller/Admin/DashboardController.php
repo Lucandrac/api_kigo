@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Avatar;
 use App\Entity\Category;
 use App\Entity\Filiere;
 use App\Entity\Genre;
@@ -43,5 +44,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Filiere', 'fas fa-list', Filiere::class);
         yield MenuItem::linkToCrud('Genre', 'fas fa-list', Genre::class);
         yield MenuItem::linkToCrud('Type Contact', 'fas fa-list', TypeContact::class);
+        yield MenuItem::linkToCrud('Avatars', 'fas fa-list', Avatar::class);
     }
 }

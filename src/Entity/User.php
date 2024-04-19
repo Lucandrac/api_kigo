@@ -13,16 +13,20 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['user_read']],
+    denormalizationContext: ['groups' => ['user_write']],
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['profil_read', 'profil_write', 'project_read', 'project_write', 'invite_read', 'invite_write'])]
+    #[Groups(['profil_read', 'profil_write', 'project_read', 'project_write', 'invite_read', 'invite_write', 'user_read', 'user_write'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Groups(['user_read', 'user_write'])]
     private ?string $email = null;
 
     /**
@@ -35,20 +39,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Groups(['user_read', 'user_write'])]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['profil_read', 'profil_write', 'project_read', 'project_write', 'invite_read', 'invite_write'])]
+    #[Groups(['profil_read', 'profil_write', 'project_read', 'project_write', 'invite_read', 'invite_write', 'user_read', 'user_write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['profil_read', 'profil_write', 'project_read', 'project_write', 'invite_read', 'invite_write'])]
+    #[Groups(['profil_read', 'profil_write', 'project_read', 'project_write', 'invite_read', 'invite_write', 'user_read', 'user_write'])]
     private ?string $firstName = null;
 
     #[ORM\Column]
     private ?bool $isAdmin = null;
 
     #[ORM\OneToOne(mappedBy: 'userId', cascade: ['persist', 'remove'])]
+    #[Groups(['user_read', 'user_write'])]
     private ?Profil $profil = null;
 
     #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Post::class)]
@@ -62,6 +68,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'userId', targetEntity: Invite::class)]
     private Collection $invites;
+
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[Groups(['profil_read', 'profil_write', 'user_read', 'user_write'])]
+    private ?Avatar $avatar = null;
     
     public function __construct()
     {
@@ -282,6 +292,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $invite->setUserId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAvatar(): ?Avatar
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(?Avatar $avatar): static
+    {
+        $this->avatar = $avatar;
 
         return $this;
     }
