@@ -27,6 +27,7 @@ class Message
     private ?Project $project = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['project_read', 'project_write'])]
     private ?\DateTimeInterface $dateCreated = null;
 
     public function getId(): ?int

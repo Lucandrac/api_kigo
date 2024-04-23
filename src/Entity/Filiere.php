@@ -20,7 +20,7 @@ class Filiere
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['profil_read', 'profil_write', 'project_read', 'project_write'])]
+    #[Groups(['profil_read', 'profil_write', 'project_read', 'project_write', 'post_read', 'post_write'])]
     private ?string $label = null;
 
     #[ORM\OneToMany(mappedBy: 'filiere', targetEntity: Profil::class)]

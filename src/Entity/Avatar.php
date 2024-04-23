@@ -19,7 +19,7 @@ class Avatar
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user_read', 'user_write'])]
+    #[Groups(['user_read', 'user_write', 'post_read', 'post_write', 'profil_read', 'profil_write'])]
     private ?string $imagePath = null;
 
     #[ORM\OneToMany(mappedBy: 'avatar', targetEntity: User::class)]

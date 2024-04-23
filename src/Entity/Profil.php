@@ -28,7 +28,7 @@ class Profil
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['profil_read', 'profil_write', 'user_read', 'user_write'])]
+    #[Groups(['profil_read', 'profil_write', 'user_read', 'user_write', 'post_read', 'post_write'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -36,7 +36,7 @@ class Profil
     private ?string $biography = null;
 
     #[ORM\ManyToOne(inversedBy: 'profils')]
-    #[Groups(['profil_read', 'profil_write'])]
+    #[Groups(['profil_read', 'profil_write', 'post_read', 'post_write'])]
     private ?Filiere $filiere = null;
 
     #[ORM\OneToOne(inversedBy: 'profil', cascade: ['persist', 'remove'])]

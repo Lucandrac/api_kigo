@@ -22,7 +22,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['profil_read', 'profil_write', 'project_read', 'project_write', 'invite_read', 'invite_write', 'user_read', 'user_write'])]
+    #[Groups(['profil_read', 'profil_write', 'project_read', 'project_write', 'invite_read', 'invite_write', 'user_read', 'user_write', 'post_read', 'post_write'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
@@ -39,7 +39,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Groups(['user_read', 'user_write'])]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
@@ -47,14 +46,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['profil_read', 'profil_write', 'project_read', 'project_write', 'invite_read', 'invite_write', 'user_read', 'user_write'])]
+    #[Groups(['profil_read', 'profil_write', 'project_read', 'project_write', 'invite_read', 'invite_write', 'user_read', 'user_write', 'post_read', 'post_write'])]
     private ?string $firstName = null;
 
     #[ORM\Column]
     private ?bool $isAdmin = null;
 
     #[ORM\OneToOne(mappedBy: 'userId', cascade: ['persist', 'remove'])]
-    #[Groups(['user_read', 'user_write'])]
+    #[Groups(['user_read', 'user_write', 'post_read', 'post_write'])]
     private ?Profil $profil = null;
 
     #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Post::class)]
@@ -70,7 +69,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $invites;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    #[Groups(['profil_read', 'profil_write', 'user_read', 'user_write'])]
+    #[Groups(['profil_read', 'profil_write', 'user_read', 'user_write', 'post_read', 'post_write'])]
     private ?Avatar $avatar = null;
     
     public function __construct()

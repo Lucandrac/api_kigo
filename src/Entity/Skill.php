@@ -20,7 +20,7 @@ class Skill
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['project_read', 'project_write'])]
+    #[Groups(['project_read', 'project_write', 'profil_read', 'profil_write'])]
     private ?string $label = null;
 
     #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'skills')]

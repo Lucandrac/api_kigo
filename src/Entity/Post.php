@@ -22,7 +22,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
     SearchFilter::class,
     properties: [
         'genre' => 'exact',
+        'project.participant.id' => 'exact',
         'creator' => 'exact',
+        'project.isOpen' => 'exact',
     ]
 )]
 class Post
@@ -63,7 +65,7 @@ class Post
     private ?Genre $genre = null;
 
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: Media::class)]
-    #[Groups(['post_read', 'post_write'])]
+    #[Groups(['post_read', 'post_write', 'project_read', 'project_write'])]
     private Collection $media;
 
     public function __construct()
